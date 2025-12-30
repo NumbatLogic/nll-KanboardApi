@@ -4,6 +4,46 @@ namespace NumbatLogic
 	{
 		class GetAllTasks
 		{
+			private static OwnedVector<InternalString>** GetTaskTags(Config pConfig, Uint32 nTaskId)
+			{
+				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
+				pHttpPost.SetUsername(pConfig.m_sUsername.GetExternalString());
+				pHttpPost.SetPassword(pConfig.m_sPassword.GetExternalString());
+
+				InternalString* sTemp = own new InternalString("{ \"jsonrpc\": \"2.0\", \"id\": 1234567890, \"method\": \"getTaskTags\", \"params\": [");
+				sTemp.AppendUint32(nTaskId);
+				sTemp.Append("]}");
+				pHttpPost.SetBody(sTemp.GetExternalString());
+				
+				string sxResponse = pHttpPost.Execute();
+				if (sxResponse == null)
+				{
+					sxResponse ="{\"jsonrpc\": \"2.0\", \"result\": {\"1\": \"tag1\", \"2\": \"tag2\"}, \"id\": 1667157705}";
+					return null;
+				}
+
+				Json* pResponse = own new Json();
+				if (!pResponse.LoadFromExternalString(sxResponse))
+					return null;
+
+				OwnedVector<InternalString>* sTagVector = own new OwnedVector<InternalString>();
+
+				Json pResult = pResponse.GetField("result");
+				if (pResult == null || !pResult.IsObject())
+					return null;
+
+				Json pField = pResult.GetChild();
+				while (pField != null)
+				{
+					if (!pField.IsString())
+						return null;
+					sTagVector.PushBack(new InternalString(pField.GetString()));
+					pField = pField.GetNext();
+				}
+
+				return disown sTagVector;
+			}
+
 			public static OwnedVector<KanboardApi::Task>** Execute(Config pConfig, Uint32 nProjectId, Uint32 nColumnId)
 			{
 				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
@@ -92,6 +132,8 @@ namespace NumbatLogic
 								return null;
 							if (!Utils::ParseColor(pBorder.GetString(), ref pTask.m_nBorderColor))
 								return null;
+
+						pTask.m_sTagVector = own GetTaskTags(pConfig, pTask.m_nId);
 						
 						pTaskVector.PushBack(disown pTask);
 					}

@@ -43,6 +43,7 @@ namespace NumbatLogic
 			public Uint32 m_nDateModified;
 			public Uint16 m_nBackgroundColor;
 			public Uint16 m_nBorderColor;
+			public OwnedVector<InternalString*>* m_sTagVector;
 		}
 	}
 } 
