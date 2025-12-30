@@ -1,0 +1,117 @@
+namespace NumbatLogic
+{
+	namespace KanboardApi
+	{
+		class GetAllTasks
+		{
+			public static OwnedVector<KanboardApi::Task>** Execute(Config pConfig, Uint32 nProjectId, Uint32 nColumnId)
+			{
+				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
+				pHttpPost.SetUsername(pConfig.m_sUsername.GetExternalString());
+				pHttpPost.SetPassword(pConfig.m_sPassword.GetExternalString());
+
+				InternalString* sTemp = own new InternalString("{ \"jsonrpc\": \"2.0\", \"id\": 2, \"method\": \"getAllTasks\", \"params\": {\"project_id\": ");
+				sTemp.AppendUint32(nProjectId);
+				sTemp.Append(",\"status_id\": 1}}");
+				pHttpPost.SetBody(sTemp.GetExternalString());
+
+				string sxResponse = pHttpPost.Execute();
+				Json* pResponse = own new Json();
+
+
+				if (sxResponse == null)
+				{
+					Console::Log("----- no response? -----");
+					sxResponse = "{\"jsonrpc\":\"2.0\",\"result\":[{\"id\":\"120\",\"title\":\"Shared library copy\",\"description\":\"Copy all shared libraries into NumberDuck and move them under the NumberDuck::Secret namespace.\r\n\r\nMaybe we can automate this to keep them in sync...\",\"date_creation\":\"1749726244\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"16\",\"owner_id\":\"0\",\"position\":\"2\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1752210260\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1752210260\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=120\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"133\",\"title\":\"Xlsx Cell Sizing\",\"description\":\"Get more confidence around xlsx cell sizing.\r\n\r\nThe whole width of 0 character stuff is pretty hax.\r\n\r\nMaybe something around building a table of font sizes so i can do a lookup of loading fonts.\r\n\r\nProbably also something around setting the 'normal' style when saving.\r\n\r\nCheck `Output_Template.xlsx` that was having some troubles.\",\"date_creation\":\"1753771416\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"13\",\"owner_id\":\"0\",\"position\":\"1\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753771623\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753771416\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=133\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"134\",\"title\":\"Duck VTuber Mini Tutorials\",\"description\":\"Script with nll code.\r\n\r\nCan generate animations of typing out the code (like bisquit) matched to TTS descriptions.\r\n\r\nAlso take snapshots of files at points and insert them into video.\r\n\r\nRecord and play console output.\r\n\r\nPng vtuber duck in the corner based offaudio.\r\nhttps://mudkipworld.itch.io/pngremix\r\n\r\nAlso output article for web that embeds the vids.\r\n\r\n---\r\n\r\nMaybe add comments to existing examples to mark code blocks? And match typing those out to the audio.\",\"date_creation\":\"1753772960\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"13\",\"owner_id\":\"0\",\"position\":\"2\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753793617\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753772960\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=134\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"135\",\"title\":\"Excel snapshot service\",\"description\":\"Can send an excel file and get a screenshot.\r\n\r\nMaybe also have some scripting or sub region to cut.\r\n\r\nCan help with #134\",\"date_creation\":\"1753773004\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"13\",\"owner_id\":\"0\",\"position\":\"3\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753773061\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753773004\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=135\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"136\",\"title\":\"Update readme to list xls/xlsx compatibility\",\"description\":\"Checkbox table or something.\",\"date_creation\":\"1753773225\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"16\",\"owner_id\":\"0\",\"position\":\"1\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753946370\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753946370\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=136\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"137\",\"title\":\"Xlsx Charts\",\"description\":\"\",\"date_creation\":\"1753774148\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"13\",\"owner_id\":\"0\",\"position\":\"4\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753774148\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753774148\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=137\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"138\",\"title\":\"Xlsx Formula\",\"description\":\"\",\"date_creation\":\"1753774154\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"13\",\"owner_id\":\"0\",\"position\":\"5\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753774154\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753774154\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=138\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"139\",\"title\":\"Formula Evaluation\",\"description\":\"Need to code up lots of functions\",\"date_creation\":\"1753774170\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"13\",\"owner_id\":\"0\",\"position\":\"6\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753774170\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753774170\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=139\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"140\",\"title\":\"Banner image for GitHub to appear in searches\",\"description\":\"\",\"date_creation\":\"1753775053\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"14\",\"owner_id\":\"0\",\"position\":\"1\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753775053\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753775053\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=140\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"141\",\"title\":\"MultiSheetExample Doc + Video\",\"description\":\"\",\"date_creation\":\"1753946399\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"15\",\"owner_id\":\"0\",\"position\":\"2\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753946399\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753946399\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=141\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}},{\"id\":\"142\",\"title\":\"Create Youtube Account\",\"description\":\"\",\"date_creation\":\"1753947702\",\"color_id\":\"yellow\",\"project_id\":\"3\",\"column_id\":\"15\",\"owner_id\":\"0\",\"position\":\"1\",\"is_active\":\"1\",\"date_completed\":null,\"score\":\"0\",\"date_due\":\"0\",\"category_id\":\"0\",\"creator_id\":\"1\",\"date_modification\":\"1753947702\",\"reference\":\"\",\"date_started\":\"0\",\"time_spent\":\"0\",\"time_estimated\":\"0\",\"swimlane_id\":\"3\",\"date_moved\":\"1753947702\",\"recurrence_status\":\"0\",\"recurrence_trigger\":\"0\",\"recurrence_factor\":\"0\",\"recurrence_timeframe\":\"0\",\"recurrence_basedate\":\"0\",\"recurrence_parent\":null,\"recurrence_child\":null,\"priority\":\"0\",\"external_provider\":null,\"external_uri\":null,\"url\":\"http://192.168.1.133:8080/?controller=TaskViewController&action=show&task_id=142\",\"color\":{\"name\":\"Yellow\",\"background\":\"rgb(245, 247, 196)\",\"border\":\"rgb(223, 227, 45)\"}}],\"id\":2}";
+				}
+				
+				if (!pResponse.LoadFromExternalString(sxResponse))
+					return null;
+
+				OwnedVector<KanboardApi::Task>* pTaskVector = own new OwnedVector<KanboardApi::Task>();
+
+				Json pResult = pResponse.GetField("result");
+				if (pResult == null || !pResult.IsArray())
+					return null;
+
+				Json pTaskJson = pResult.GetChild();
+				while (pTaskJson)
+				{
+					Json pField;
+					KanboardApi::Task* pTask = own new KanboardApi::Task();
+
+					pField = pTaskJson.GetField("id");
+					if (pField == null || !pField.IsString())
+						return null;
+					pTask.m_nId = cast Uint32(ExternalString::atol(pField.GetString()));
+
+					pField = pTaskJson.GetField("column_id");
+					if (pField == null || !pField.IsString())
+						return null;
+					pTask.m_nColumnId = cast Uint32(ExternalString::atol(pField.GetString()));
+
+					if (pTask.m_nColumnId == nColumnId)
+					{
+						pField = pTaskJson.GetField("position");
+						if (pField == null || !pField.IsString())
+							return null;
+						pTask.m_nPosition = cast Uint32(ExternalString::atol(pField.GetString()));
+
+						pField = pTaskJson.GetField("title");
+						if (pField == null || !pField.IsString())
+							return null;
+						pTask.m_sTitle = own new InternalString(pField.GetString());
+
+						pField = pTaskJson.GetField("description");
+						if (pField == null || !pField.IsString())
+							return null;
+						pTask.m_sDescription = own new InternalString(pField.GetString());
+
+						pField = pTaskJson.GetField("date_creation");
+						if (pField == null || !pField.IsString())
+							return null;
+						pTask.m_nDateCreated = cast Uint32(ExternalString::atol(pField.GetString()));
+
+						pField = pTaskJson.GetField("date_modification");
+						if (pField == null || !pField.IsString())
+							return null;
+						pTask.m_nDateModified = cast Uint32(ExternalString::atol(pField.GetString()));
+						
+						pField = pTaskJson.GetField("color");
+						if (pField == null || !pField.IsObject())
+							return null;
+						
+							Json pBackground = pField.GetField("background");
+							if (pBackground == null || !pBackground.IsString())
+								return null;
+							if (!Utils::ParseColor(pBackground.GetString(), ref pTask.m_nBackgroundColor))
+								return null;
+
+							Json pBorder = pField.GetField("border");
+							if (pBorder == null || !pBorder.IsString())
+								return null;
+							if (!Utils::ParseColor(pBorder.GetString(), ref pTask.m_nBorderColor))
+								return null;
+						
+						pTaskVector.PushBack(disown pTask);
+					}
+					pTaskJson = pTaskJson.GetNext();
+				}
+
+				// sort
+				for (int j = 0; j < pTaskVector.GetSize(); j++)
+				{
+					for (int i = 0; i < pTaskVector.GetSize()-1; i++)
+					{
+						KanboardApi::Task pTask = pTaskVector.Get(i);
+						KanboardApi::Task pNextTask = pTaskVector.Get(i+1);
+						if (pTask.m_nPosition > pNextTask.m_nPosition)
+							pTaskVector.Swap(i, i+1);
+					}
+				}
+
+				return disown pTaskVector;
+			}
+		}
+	}
+}

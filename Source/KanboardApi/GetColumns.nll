@@ -1,0 +1,84 @@
+namespace NumbatLogic
+{
+	namespace KanboardApi
+	{
+		class GetColumns
+		{
+			public static OwnedVector<KanboardApi::Column>** Execute(Config pConfig, Uint32 nProjectId)
+			{
+				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
+				pHttpPost.SetUsername(pConfig.m_sUsername.GetExternalString());
+				pHttpPost.SetPassword(pConfig.m_sPassword.GetExternalString());
+
+				InternalString* sTemp = own new InternalString("{ \"jsonrpc\": \"2.0\", \"id\": 3, \"method\": \"getColumns\", \"params\": [");
+				sTemp.AppendUint32(nProjectId);
+				sTemp.Append("]}");
+				pHttpPost.SetBody(sTemp.GetExternalString());
+
+				string sxResponse = pHttpPost.Execute();
+				Json* pResponse = own new Json();
+
+
+				if (sxResponse == null)
+				{
+					Console::Log("----- no response? -----");
+					sxResponse = "{\"jsonrpc\":\"2.0\",\"result\":[{\"id\":\"13\",\"title\":\"Backlog\",\"position\":\"1\",\"project_id\":\"3\",\"task_limit\":\"0\",\"description\":\"\",\"hide_in_dashboard\":\"0\"},{\"id\":\"14\",\"title\":\"Ready\",\"position\":\"2\",\"project_id\":\"3\",\"task_limit\":\"0\",\"description\":\"\",\"hide_in_dashboard\":\"0\"},{\"id\":\"15\",\"title\":\"Work in progress\",\"position\":\"3\",\"project_id\":\"3\",\"task_limit\":\"0\",\"description\":\"\",\"hide_in_dashboard\":\"0\"},{\"id\":\"16\",\"title\":\"Done\",\"position\":\"4\",\"project_id\":\"3\",\"task_limit\":\"0\",\"description\":\"\",\"hide_in_dashboard\":\"0\"}],\"id\":3}";
+				}
+
+				if (!pResponse.LoadFromExternalString(sxResponse))
+					return null;
+
+				OwnedVector<KanboardApi::Column>* pColumnVector = own new OwnedVector<KanboardApi::Column>();
+
+				Json pResult = pResponse.GetField("result");
+				if (pResult == null || !pResult.IsArray())
+					return null;
+
+				Json pColumnJson = pResult.GetChild();
+				while (pColumnJson)
+				{
+					Json pField;
+					KanboardApi::Column* pColumn = own new KanboardApi::Column();
+
+					pField = pColumnJson.GetField("id");
+					if (pField == null || !pField.IsString())
+						return null;
+					pColumn.m_nId = cast Uint32(ExternalString::atol(pField.GetString()));
+
+					pField = pColumnJson.GetField("position");
+					if (pField == null || !pField.IsString())
+						return null;
+					pColumn.m_nPosition = cast Uint32(ExternalString::atol(pField.GetString()));
+
+					pField = pColumnJson.GetField("title");
+					if (pField == null || !pField.IsString())
+						return null;
+					pColumn.m_sTitle = own new InternalString(pField.GetString());
+
+					pField = pColumnJson.GetField("task_limit");
+					if (pField == null || !pField.IsString())
+						return null;
+					pColumn.m_nTaskLimit = cast Uint32(ExternalString::atol(pField.GetString()));
+
+					pColumnVector.PushBack(disown pColumn);
+					pColumnJson = pColumnJson.GetNext();
+				}
+
+
+				// sort
+				for (int j = 0; j < pColumnVector.GetSize(); j++)
+				{
+					for (int i = 0; i < pColumnVector.GetSize()-1; i++)
+					{
+						KanboardApi::Column pColumn = pColumnVector.Get(i);
+						KanboardApi::Column pNextColumn = pColumnVector.Get(i+1);
+						if (pColumn.m_nPosition > pNextColumn.m_nPosition)
+							pColumnVector.Swap(i, i+1);
+					}
+				}
+
+				return disown pColumnVector;
+			}
+		}
+	}
+}

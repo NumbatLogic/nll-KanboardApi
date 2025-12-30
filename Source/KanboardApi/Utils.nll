@@ -1,0 +1,111 @@
+namespace NumbatLogic
+{
+	namespace KanboardApi
+	{
+		class Utils
+		{
+			// "rgb(245, 247, 196)"
+			public static bool __ParseChannel(InternalString sIn, ref Uint8 nChannel)
+			{
+				int nCount = 0;
+				Uint32 nTemp = 0;
+				UniChar c;
+
+				while (sIn.GetLength() > 0)
+				{
+					c = sIn.GetChar(0);
+
+					if (c == ' ')
+					{
+						sIn.CropFront(1);
+						continue;
+					}
+
+					if (c >= '0' && c <= '9')
+					{
+						nTemp = nTemp * 10;
+						nTemp += (c - '0');
+						sIn.CropFront(1);
+						nCount++;
+
+						continue;
+					}
+
+					if (c == ',' || c == ')')
+					{
+						sIn.CropFront(1);
+						break;
+					}
+
+					return false;
+				}
+
+				if (nCount == 0 || nCount > 3)
+					return false;
+				if (nTemp > 255)
+					return false;
+
+				nChannel = cast Uint8(nTemp);
+				return true;
+			}
+
+			public static bool ParseColor(string szIn, ref Uint16 nOut)
+			{
+				InternalString* sIn = own new InternalString(szIn);
+
+				if (sIn.StartsWith("#"))
+				{
+					if (sIn.GetLength() != 7)
+						return false;
+
+					sIn.CropFront(1);
+
+					Uint32 nTemp = cast Uint32(ExternalString::hextol(sIn.GetExternalString()));
+
+					Uint16 nR = (nTemp >> 16) & 0xFF;
+					Uint16 nG = (nTemp >> 8) & 0xFF;
+					Uint16 nB = (nTemp >> 0) & 0xFF;
+
+					Uint16 nOutR = (nB >> 3) & 0x1f;
+					Uint16 nOutG = ((nG >> 2) & 0x3f) << 5;
+					Uint16 nOutB = ((nR >> 3) & 0x1f) << 11;
+					
+					nOut = (nOutR | nOutG | nOutB);
+				
+					return true;
+				}
+				
+				if (!sIn.StartsWith("rgb("))
+					return false;
+
+				if (!sIn.IsAscii())
+					return false;
+
+				if (!sIn.EndsWith(")"))
+					return false;
+
+				sIn.CropFront(4);
+
+				Uint8 nR = 0;
+				if (!__ParseChannel(sIn, ref nR))
+					return false;
+
+				Uint8 nG = 0;
+				if (!__ParseChannel(sIn, ref nG))
+					return false;
+
+				Uint8 nB = 0;
+				if (!__ParseChannel(sIn, ref nB))
+					return false;
+
+				Uint16 nOutR = (nB >> 3) & 0x1f;
+				Uint16 nOutG = ((nG >> 2) & 0x3f) << 5;
+				Uint16 nOutB = ((nR >> 3) & 0x1f) << 11;
+
+				nOut = (nOutR | nOutG | nOutB);
+				
+				return true;
+			}
+		}
+	}
+}

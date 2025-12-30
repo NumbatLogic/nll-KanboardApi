@@ -1,0 +1,22 @@
+namespace NumbatLogic
+{
+	class Utils_ParseColor
+	{
+		public static void Run()
+		{
+			Uint16 nColor;
+
+			Assert::Plz(!KanboardApi::Utils::ParseColor("r", ref nColor));
+
+			Assert::Plz(KanboardApi::Utils::ParseColor("rgb(0, 0, 0)", ref nColor));
+			Assert::Plz(nColor == 0x0000);
+			Assert::Plz(KanboardApi::Utils::ParseColor("rgb(255, 255, 255)", ref nColor));
+			Assert::Plz(nColor == 0xFFFF);
+
+			Assert::Plz(KanboardApi::Utils::ParseColor("#000000", ref nColor));
+			Assert::Plz(nColor == 0x0000);
+			Assert::Plz(KanboardApi::Utils::ParseColor("#ffffff", ref nColor));
+			Assert::Plz(nColor == 0xFFFF);
+		}
+	}
+} 

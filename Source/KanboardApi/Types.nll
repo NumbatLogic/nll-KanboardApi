@@ -1,0 +1,48 @@
+namespace NumbatLogic
+{
+	namespace KanboardApi
+	{
+		class Config
+		{
+			public InternalString* m_sHost;
+			public InternalString* m_sUsername;
+			public InternalString* m_sPassword;
+
+			public construct()
+			{
+				m_sHost = own new InternalString("http://localhost/jsonrpc.php");
+				m_sUsername = own new InternalString("user");
+				m_sPassword = own new InternalString("pass");
+			}
+		}
+
+		class Project
+		{
+			public Uint32 m_nId;
+			public InternalString* m_sName;
+			public InternalString* m_sIdentifier;
+			public Uint32 m_nLastModified;
+		}
+
+		class Column
+		{
+			public Uint32 m_nId;
+			public Uint32 m_nPosition;
+			public InternalString* m_sTitle;
+			public Uint32 m_nTaskLimit;
+		}
+
+		class Task
+		{
+			public Uint32 m_nId;
+			public Uint32 m_nColumnId;
+			public Uint32 m_nPosition;
+			public InternalString* m_sTitle;
+			public InternalString* m_sDescription;
+			public Uint32 m_nDateCreated;
+			public Uint32 m_nDateModified;
+			public Uint16 m_nBackgroundColor;
+			public Uint16 m_nBorderColor;
+		}
+	}
+} 

@@ -1,0 +1,66 @@
+namespace NumbatLogic
+{
+	namespace KanboardApi
+	{
+		class GetAllProjects
+		{
+			public static OwnedVector<KanboardApi::Project>** Execute(Config pConfig)
+			{
+				Json* pAllProjectJson = own new Json();
+
+				{
+					HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
+					pHttpPost.SetUsername(pConfig.m_sUsername.GetExternalString());
+					pHttpPost.SetPassword(pConfig.m_sPassword.GetExternalString());
+					pHttpPost.SetBody("{ \"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"getAllProjects\" }");
+					string sxResult = pHttpPost.Execute();
+					if (sxResult == null)
+					{
+						Console::Log("----- no response? -----");
+						sxResult = "{\"jsonrpc\":\"2.0\",\"result\":[{\"id\":\"5\",\"name\":\"Game Strut\",\"is_active\":\"1\",\"token\":\"\",\"last_modified\":\"1748933378\",\"is_public\":\"0\",\"is_private\":\"0\",\"is_everybody_allowed\":\"0\",\"default_swimlane\":\"Default swimlane\",\"show_default_swimlane\":\"1\",\"description\":null,\"identifier\":\"GS\",\"start_date\":\"\",\"end_date\":\"\",\"owner_id\":\"1\",\"priority_default\":\"0\",\"priority_start\":\"0\",\"priority_end\":\"3\",\"email\":null,\"predefined_email_subjects\":null,\"per_swimlane_task_limits\":\"0\",\"task_limit\":\"0\",\"enable_global_tags\":\"1\",\"url\":{\"board\":\"http://192.168.1.133:8080/?controller=BoardViewController&action=show&project_id=5\",\"list\":\"http://192.168.1.133:8080/?controller=TaskListController&action=show&project_id=5\"}},{\"id\":\"1\",\"name\":\"Games Night\",\"is_active\":\"1\",\"token\":\"0650cbde193a171482db5f40247894a718df7b7a9dac5bc08517034308f8\",\"last_modified\":\"1756869825\",\"is_public\":\"1\",\"is_private\":\"0\",\"is_everybody_allowed\":\"0\",\"default_swimlane\":\"Default swimlane\",\"show_default_swimlane\":\"1\",\"description\":null,\"identifier\":\"\",\"start_date\":\"\",\"end_date\":\"\",\"owner_id\":\"1\",\"priority_default\":\"0\",\"priority_start\":\"0\",\"priority_end\":\"3\",\"email\":null,\"predefined_email_subjects\":null,\"per_swimlane_task_limits\":\"0\",\"task_limit\":\"0\",\"enable_global_tags\":\"1\",\"url\":{\"board\":\"http://192.168.1.133:8080/?controller=BoardViewController&action=show&project_id=1\",\"list\":\"http://192.168.1.133:8080/?controller=TaskListController&action=show&project_id=1\"}},{\"id\":\"2\",\"name\":\"Home\",\"is_active\":\"1\",\"token\":\"\",\"last_modified\":\"1756692776\",\"is_public\":\"0\",\"is_private\":\"0\",\"is_everybody_allowed\":\"0\",\"default_swimlane\":\"Default swimlane\",\"show_default_swimlane\":\"1\",\"description\":\"\r\n* House is green\r\n\r\n* Social is purple\r\n\r\n* Appointments are blue\r\n\r\n* Health & Fitness are light (apple) green\r\n\",\"identifier\":\"HOME\",\"start_date\":\"\",\"end_date\":\"\",\"owner_id\":\"1\",\"priority_default\":\"0\",\"priority_start\":\"0\",\"priority_end\":\"3\",\"email\":\"\",\"predefined_email_subjects\":null,\"per_swimlane_task_limits\":\"0\",\"task_limit\":\"0\",\"enable_global_tags\":\"1\",\"url\":{\"board\":\"http://192.168.1.133:8080/?controller=BoardViewController&action=show&project_id=2\",\"list\":\"http://192.168.1.133:8080/?controller=TaskListController&action=show&project_id=2\"}},{\"id\":\"4\",\"name\":\"Numbat Logic\",\"is_active\":\"1\",\"token\":\"\",\"last_modified\":\"1756566188\",\"is_public\":\"0\",\"is_private\":\"0\",\"is_everybody_allowed\":\"0\",\"default_swimlane\":\"Default swimlane\",\"show_default_swimlane\":\"1\",\"description\":null,\"identifier\":\"NUMBAT\",\"start_date\":\"\",\"end_date\":\"\",\"owner_id\":\"1\",\"priority_default\":\"0\",\"priority_start\":\"0\",\"priority_end\":\"3\",\"email\":null,\"predefined_email_subjects\":null,\"per_swimlane_task_limits\":\"0\",\"task_limit\":\"0\",\"enable_global_tags\":\"1\",\"url\":{\"board\":\"http://192.168.1.133:8080/?controller=BoardViewController&action=show&project_id=4\",\"list\":\"http://192.168.1.133:8080/?controller=TaskListController&action=show&project_id=4\"}},{\"id\":\"3\",\"name\":\"Number Duck\",\"is_active\":\"1\",\"token\":\"\",\"last_modified\":\"1753947704\",\"is_public\":\"0\",\"is_private\":\"0\",\"is_everybody_allowed\":\"0\",\"default_swimlane\":\"Default swimlane\",\"show_default_swimlane\":\"1\",\"description\":null,\"identifier\":\"DUCK\",\"start_date\":\"\",\"end_date\":\"\",\"owner_id\":\"1\",\"priority_default\":\"0\",\"priority_start\":\"0\",\"priority_end\":\"3\",\"email\":null,\"predefined_email_subjects\":null,\"per_swimlane_task_limits\":\"0\",\"task_limit\":\"0\",\"enable_global_tags\":\"1\",\"url\":{\"board\":\"http://192.168.1.133:8080/?controller=BoardViewController&action=show&project_id=3\",\"list\":\"http://192.168.1.133:8080/?controller=TaskListController&action=show&project_id=3\"}}],\"id\":1}";
+					}
+					
+					if (!pAllProjectJson.LoadFromExternalString(sxResult))
+						return null;
+				}
+
+				OwnedVector<KanboardApi::Project>* pProjectVector = own new OwnedVector<KanboardApi::Project>();
+				
+				Json pResult = pAllProjectJson.GetField("result");
+				if (pResult == null || !pResult.IsArray())
+					return null;
+
+				Json pProjectJson = pResult.GetChild();
+				while (pProjectJson)
+				{
+					Json pId = pProjectJson.GetField("id");
+					if (pId == null || !pId.IsString())
+						return null;
+
+					Json pName = pProjectJson.GetField("name");
+					if (pName == null || !pName.IsString())
+						return null;
+
+					Json pIdentifier = pProjectJson.GetField("identifier");
+					if (pIdentifier == null || !pIdentifier.IsString())
+						return null;
+
+					Json pLastModified = pProjectJson.GetField("last_modified");
+					if (pLastModified == null || !pLastModified.IsString())
+						return null;
+
+					KanboardApi::Project* pProject = own new KanboardApi::Project();
+						pProject.m_nId = cast Uint32(ExternalString::atol(pId.GetString()));
+						pProject.m_sName = own new InternalString(pName.GetString());
+						pProject.m_sIdentifier = own new InternalString(pIdentifier.GetString());
+						pProject.m_nLastModified = cast Uint32(ExternalString::atol(pLastModified.GetString()));
+					pProjectVector.PushBack(disown pProject);
+
+					pProjectJson = pProjectJson.GetNext();
+				}
+
+				return disown pProjectVector;
+			}
+		}
+	}
+}
