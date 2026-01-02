@@ -1,0 +1,33 @@
+namespace NumbatLogic
+{
+	namespace KanboardApi
+	{
+		class DownloadTaskFile
+		{
+			public static gsBlob** Execute(Config pConfig, Uint32 nTaskFileId)
+			{
+				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
+				pHttpPost.SetUsername(pConfig.m_sUsername.GetExternalString());
+				pHttpPost.SetPassword(pConfig.m_sPassword.GetExternalString());
+
+				InternalString* sTemp = own new InternalString("{ \"jsonrpc\": \"2.0\", \"id\": 3, \"method\": \"downloadTaskFile\", \"params\": [");
+				sTemp.AppendUint32(nTaskFileId);
+				sTemp.Append("]}");
+				pHttpPost.SetBody(sTemp.GetExternalString());
+
+				string sxResponse = pHttpPost.Execute();
+				Json* pResponse = own new Json();
+				if (sxResponse == null || !pResponse.LoadFromExternalString(sxResponse))
+					return null;
+
+				Json pResult = pResponse.GetField("result");
+				if (pResult == null || !pResult.IsString())
+					return null;
+
+				gsBlob* pBlob = own Base64::Decode(pResult.GetString());
+
+				return disown pBlob;
+			}
+		}
+	}
+}

@@ -44,6 +44,66 @@ namespace NumbatLogic
 				return disown sTagVector;
 			}
 
+			private static OwnedVector<TaskFile>** GetTaskFiles(Config pConfig, Uint32 nTaskId)
+			{
+				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
+				pHttpPost.SetUsername(pConfig.m_sUsername.GetExternalString());
+				pHttpPost.SetPassword(pConfig.m_sPassword.GetExternalString());
+
+				InternalString* sTemp = own new InternalString("{ \"jsonrpc\": \"2.0\", \"id\": 1234567890, \"method\": \"getAllTaskFiles\", \"params\": { \"task_id\": ");
+				sTemp.AppendUint32(nTaskId);
+				sTemp.Append("}}");
+				pHttpPost.SetBody(sTemp.GetExternalString());
+				
+				string sxResponse = pHttpPost.Execute();
+				if (sxResponse == null)
+				{
+					sxResponse ="{\"jsonrpc\": \"2.0\", \"result\": [], \"id\": 1667157705}";
+					return null;
+				}
+
+				Json* pResponse = own new Json();
+				if (!pResponse.LoadFromExternalString(sxResponse))
+					return null;
+
+				OwnedVector<TaskFile>* pFileVector = own new OwnedVector<TaskFile>();
+
+				Json pResult = pResponse.GetField("result");
+				if (pResult == null || !pResult.IsArray())
+					return null;
+
+				Json pFileJson = pResult.GetChild();
+				while (pFileJson != null)
+				{
+					if (!pFileJson.IsObject())
+						return null;
+
+					Json pField;
+					KanboardApi::TaskFile* pTaskFile = own new KanboardApi::TaskFile();
+
+					pField = pFileJson.GetField("id");
+					if (pField == null || !pField.IsString())
+						return null;
+					pTaskFile.m_nId = cast Uint32(ExternalString::atol(pField.GetString()));
+
+					pField = pFileJson.GetField("name");
+					if (pField == null || !pField.IsString())
+						return null;
+					pTaskFile.m_sName = own new InternalString(pField.GetString());
+
+					pField = pFileJson.GetField("path");
+					if (pField == null || !pField.IsString())
+						return null;
+					pTaskFile.m_sPath = own new InternalString(pField.GetString());
+
+					pFileVector.PushBack(disown pTaskFile);
+
+					pFileJson = pFileJson.GetNext();
+				}
+
+				return disown pFileVector;
+			}
+
 			public static OwnedVector<KanboardApi::Task>** Execute(Config pConfig, Uint32 nProjectId, Uint32 nColumnId)
 			{
 				HttpPost* pHttpPost = own new HttpPost(pConfig.m_sHost.GetExternalString());
@@ -116,6 +176,11 @@ namespace NumbatLogic
 						if (pField == null || !pField.IsString())
 							return null;
 						pTask.m_nDateModified = cast Uint32(ExternalString::atol(pField.GetString()));
+
+						pField = pTaskJson.GetField("date_moved");
+						if (pField == null || !pField.IsString())
+							return null;
+						pTask.m_nDateMoved = cast Uint32(ExternalString::atol(pField.GetString()));
 						
 						pField = pTaskJson.GetField("color");
 						if (pField == null || !pField.IsObject())
@@ -134,6 +199,7 @@ namespace NumbatLogic
 								return null;
 
 						pTask.m_sTagVector = own GetTaskTags(pConfig, pTask.m_nId);
+						pTask.m_pFileVector = own GetTaskFiles(pConfig, pTask.m_nId);
 						
 						pTaskVector.PushBack(disown pTask);
 					}

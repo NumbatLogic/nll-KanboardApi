@@ -32,6 +32,13 @@ namespace NumbatLogic
 			public Uint32 m_nTaskLimit;
 		}
 
+		class TaskFile
+		{
+			public Uint32 m_nId;
+			public InternalString* m_sName;
+			public InternalString* m_sPath;
+		}
+
 		class Task
 		{
 			public Uint32 m_nId;
@@ -41,9 +48,11 @@ namespace NumbatLogic
 			public InternalString* m_sDescription;
 			public Uint32 m_nDateCreated;
 			public Uint32 m_nDateModified;
+			public Uint32 m_nDateMoved;
 			public Uint16 m_nBackgroundColor;
 			public Uint16 m_nBorderColor;
 			public OwnedVector<InternalString*>* m_sTagVector;
+			public OwnedVector<TaskFile*>* m_pFileVector;
 		}
 	}
 } 
